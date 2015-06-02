@@ -1,6 +1,7 @@
 from flask import Flask
 from flask import render_template, url_for
 
+import os
 import os.path
 
 app = Flask(__name__)
@@ -40,6 +41,7 @@ def precipitation():
 
     return cache[cache_name]
 
+
 @app.route("/approximate/<int:n_components>")
 def approximate(n_components):
     import scipy.io
@@ -56,6 +58,14 @@ def approximate(n_components):
     return json.dumps({ "W": augmented.tolist(),
                         "HT": H.T.tolist(),
                     })
+
+@app.route("/precipitation/list")
+def precipitation_list():
+    files = os.listdir(os.path.join('gen', 'precip_approx'))
+
+    dates = [filename[:-len(".mat")] for filename in files]
+
+    return render_template("precipitation_list.html", dates=dates)
 
 @app.route("/")
 def index():
