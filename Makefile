@@ -1,6 +1,6 @@
 SHELL := /bin/bash
 BASE_URL := http://www.ncdc.noaa.gov/orders/qclcd
-UNZIP := unzip -DD
+UNZIP := unzip
 ZIP_FILES := daily.txt station.txt precip.txt hourly.txt monthly.txt remarks.txt
 
 .SECONDARY:
