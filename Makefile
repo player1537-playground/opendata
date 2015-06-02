@@ -9,8 +9,12 @@ data/%/data.zip:
 	@mkdir -p $(dir $@)
 	wget --no-use-server-timestamp $(BASE_URL)/QCLCD$*.zip -O $@
 
-$(addprefix data/%/,$(ZIP_FILES)): data/%/data.zip
-	$(UNZIP) -p $< $*$(notdir $@) > $@
+define data_file_gen
+data/%/$(1): data/%/data.zip
+	$(UNZIP) -p $$< $$*$$(notdir $$@) > $$@
+endef
+
+$(foreach file,$(ZIP_FILES),$(eval $(call data_file_gen,$(file))))
 
 data/%/precip.csv: data/%/precip.txt
 	ln $< $@
