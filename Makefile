@@ -1,14 +1,14 @@
 SHELL := /bin/bash
 
 .PRECIOUS: gen/precip/%.mat
-gen/precip/%.mat: data/%/precip.csv
+gen/precip/%.mat: data/%/precip.csv data/%/station.csv
 	@mkdir -p $(dir $@)
-	python -m analysis.precipitation $< $@
+	python -m analysis.precipitation $^ $@
 
 .PRECIOUS: gen/precip_approx/%.mat
 gen/precip_approx/%.mat: gen/precip/%.mat
 	@mkdir -p $(dir $@)
-	python -m analysis.approximate $< $@
+	python -m analysis.approximate $^ $@
 
 .PHONY: clean
 clean:

@@ -5,9 +5,6 @@ import scipy.io
 import sklearn.decomposition
 import numpy as np
 
-def rmse(X, Y):
-    return np.sqrt(np.mean(np.multiply(X - Y, X - Y)))
-
 def main():
     if len(sys.argv) < 3:
         print "Usage: %s input.mat output.mat" % sys.argv[0]
@@ -16,8 +13,7 @@ def main():
     input_filename = sys.argv[1]
     output_filename = sys.argv[2]
 
-    matrices = scipy.io.loadmat(input_filename)
-    precip = matrices["precip"]
+    precip = scipy.io.loadmat(input_filename)["precip"]
 
     results = dict()
     for n_components in range(1, 10):
@@ -30,10 +26,6 @@ def main():
 
         results["W%d" % n_components] = W
         results["H%d" % n_components] = H
-
-    results["locations"] = matrices["locations"]
-    results["wbans"] = matrices["wbans"]
-    results["datetimes"] = matrices["datetimes"]
 
     scipy.io.savemat(output_filename, results)
 

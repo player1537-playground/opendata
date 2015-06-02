@@ -1,0 +1,24 @@
+{
+  "name": "weather-data",
+  "version": "0.0.0",
+  "authors": [
+    "Tanner Hobson <thobson125@gmail.com>"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "static/bower",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "bootstrap": "~3.3.4",
+    "bower": "https://github.com/wpj/Leaflet.heat/tree/bower",
+    "d3": "~3.5.5",
+    "queue-async": "~1.0.7",
+    "leaflet": "~0.7.3",
+    "Leaflet.heat": "git://github.com/Leaflet/Leaflet.heat#627ede7c11bbe43a3a8b94a5be0d0745cac71e64"
+  }
+}
