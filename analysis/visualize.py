@@ -7,7 +7,7 @@ import os.path
 app = Flask(__name__)
 app.root_path = os.path.abspath(os.path.dirname(app.root_path))
 
-progs = ["approximate", "precipitation"]
+progs = ["approximate", "precipitation", "feature_view"]
 
 cache = {}
 
@@ -53,11 +53,11 @@ def approximate(n_components):
     H = matrices["H%d" % n_components]
     locations = matrices["locations"]
 
-    augmented = np.append(W, locations, axis=1)
-
-    return json.dumps({ "W": augmented.tolist(),
-                        "HT": H.T.tolist(),
-                    })
+    return json.dumps({
+        "W": W.tolist(),
+        "H": H.tolist(),
+        "locations": locations.tolist()
+    })
 
 @app.route("/precipitation/list")
 def precipitation_list():
@@ -71,10 +71,7 @@ def precipitation_list():
 def index():
     print app.root_path
 
-    routes = [
-        ("approximate", url_for("viz", prog="approximate")),
-        ("precipitation", url_for("viz", prog="precipitation"))
-    ]
+    routes = [(p, url_for("viz", prog=p)) for p in progs]
 
     return render_template("index.html", routes=routes)
 

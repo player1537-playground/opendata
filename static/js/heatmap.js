@@ -1,17 +1,23 @@
 function heatmap() {
     var width = 500,
         height = 500,
-        lat = function(d) { return d[d.length - 2]; },
-        lng = function(d) { return d[d.length - 1]; },
+        lat = function(d, i) { return d[d.length - 2]; },
+        lng = function(d, i) { return d[d.length - 1]; },
         z = function(d) { return d[0]; },
         center = L.latLng(39.833333, -98.583333),
         zoom = 2,
         minZoom = 1,
         maxZoom = 5,
-        maxBounds = L.latLngBounds(L.latLng(-44.25, -176.67),
-                                   L.latLng(68.09, 144.83)),
+        maxBounds = L.latLngBounds(L.latLng(24.7433195, -124.7844079),
+                                   L.latLng(49.3457868, -66.9513812)),
         radius = 25,
-        byZoom = false;
+        byZoom = false,
+        init = false,
+        map = null,
+        heat = null,
+        latLngs = [],
+        heatOpts = { radius: 1, max: 1 };
+
 
     function getRadius(map, radiusInMeters) {
         var pointC = map.latLngToContainerPoint([width/2, height/2]);
@@ -33,59 +39,62 @@ function heatmap() {
 
     function my(selection) {
         selection.each(function(data) {
-            if (width == null) {
-                width = window.innerWidth
-                    || document.documentElement.clientWidth
-                    || document.body.clientWidth;
+            var thisEl = d3.select(this);
+
+            function update() {
+                var parent = thisEl.selectAll(".map").data([data]);
+                parent.enter().append("div")
+                    .attr("class", "map");
+                parent
+                    .style("width", width + "px")
+                    .style("height", height + "px");
+
+                if (!init) {
+                    map = L.map(parent.node(),
+                                { center: center,
+                                  zoom: zoom,
+                                  minZoom: minZoom,
+                                  maxZoom: maxZoom,
+                                  maxBounds: maxBounds,
+                                  byZoom: byZoom
+                                });
+
+                    L.tileLayer('http://api.tiles.mapbox.com/v4/{mapid}/{z}/{x}/{y}.{format}?access_token={accessToken}', {
+                        attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery Â© <a href="http://mapbox.com">Mapbox</a>',
+                        maxZoom: maxZoom,
+                        mapid: 'mapbox.light',
+                        format: 'png',
+                        accessToken: 'pk.eyJ1IjoicGxheWVyMTUzNyIsImEiOiI1OWM0YzhiOTc4ZjIyNDNkZGU4OTYzN2JhMzVkYTM1NCJ9.13Xa8k0RPCfELN4v908Chg'
+                    }).addTo(map);
+
+                    latLngs = [];
+                    heatOpts = {
+                        radius: getRadius(map, radius),
+                        max: 1
+                    };
+
+                    heat = L.heatLayer(latLngs, heatOpts).addTo(map);
+
+                    map.on("zoomend", function() {
+                        heatOpts.radius = getRadius(map, radius);
+                        heat.setOptions(heatOpts);
+                    });
+
+                    init = true;
+                }
+
+                latLngs = data.map(function(d, i) {
+                    return [lat(d, i), lng(d, i), z(d, i)];
+                });
+
+                heatOpts.maxValue = d3.max(latLngs, function(d) { return d[2]; });
+
+                heat.setLatLngs([]);
+                heat.setOptions(heatOpts);
+                heat.setLatLngs(latLngs);
             }
 
-            if (height == null) {
-                height = window.innerHeight
-                    || document.documentElement.clientHeight
-                    || document.body.clientHeight;
-            }
-
-            var parent = d3.select(this).selectAll(".map").data([data]);
-            parent.enter().append("div")
-                .attr("class", "map");
-            parent
-                .style("width", width + "px")
-                .style("height", height + "px");
-
-            var map = L.map(parent.node(),
-                            { center: center,
-                              zoom: zoom,
-                              minZoom: minZoom,
-                              maxZoom: maxZoom,
-                              maxBounds: maxBounds,
-                              byZoom: byZoom
-                            });
-
-            L.tileLayer('http://api.tiles.mapbox.com/v4/{mapid}/{z}/{x}/{y}.{format}?access_token={accessToken}', {
-                attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery Â© <a href="http://mapbox.com">Mapbox</a>',
-                maxZoom: maxZoom,
-                mapid: 'mapbox.light',
-                format: 'png',
-                accessToken: 'pk.eyJ1IjoicGxheWVyMTUzNyIsImEiOiI1OWM0YzhiOTc4ZjIyNDNkZGU4OTYzN2JhMzVkYTM1NCJ9.13Xa8k0RPCfELN4v908Chg'
-            }).addTo(map);
-
-            var latLngs = data.map(function(d) {
-                return [lat(d), lng(d), z(d)];
-            });
-
-            var maxValue = d3.max(latLngs, function(d) { return d[2]; });
-
-            console.log(maxValue);
-
-            var heat = L.heatLayer(latLngs,
-                                   { radius: getRadius(map, radius),
-                                     max: maxValue
-                                   }).addTo(map);
-
-            map.on("zoomend", function() {
-                heat.setOptions({ radius: getRadius(map, radius) });
-                heat.redraw();
-            });
+            update();
         });
     }
 

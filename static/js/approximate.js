@@ -1,10 +1,16 @@
 queue()
     .defer(d3.json, "/approximate/5")
     .await(function(error, data) {
-        var feature = 2;
+        var W = data.W,
+            H = data.H,
+            locations = data.locations;
+
+        var feature = 1;
 
         var heatmapChart = heatmap()
             .z(function(d) { return d[feature]; })
+            .lat(function(d, i) { return locations[i][0]; })
+            .lng(function(d, i) { return locations[i][1]; })
             .width(978)
             .height(600)
             .maxZoom(10)
@@ -15,15 +21,4 @@ queue()
             .datum(data.W)
             .call(heatmapChart);
 
-        var graph = verticalLineGraph()
-                .width(300)
-                .height(600)
-                .yScale(d3.scale.log())
-                .y(function(d) { return d[feature]; });
-        var oldY = graph.y();
-        graph.y(function(d, i) { return oldY(d, i) + 1; });
-
-        d3.select("#control").append("div")
-            .datum(data.HT)
-            .call(graph);
     });
