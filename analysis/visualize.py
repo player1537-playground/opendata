@@ -7,7 +7,7 @@ import os.path
 app = Flask(__name__)
 app.root_path = os.path.abspath(os.path.dirname(app.root_path))
 
-progs = ["approximate", "precipitation", "feature_view"]
+progs = ["approximate", "precipitation", "feature_view", "clusters"]
 
 cache = {}
 
@@ -57,6 +57,20 @@ def approximate(n_components):
         "W": W.tolist(),
         "H": H.tolist(),
         "locations": locations.tolist()
+    })
+
+@app.route("/clusters/<date>/<int:n_components>")
+def cluster(date, n_components):
+    import scipy.io
+    import json
+    import numpy as np
+
+    clusters_path = os.path.join("gen", "clusters", date + ".mat")
+    clusters_mat = scipy.io.loadmat(clusters_path)
+    clusters = clusters_mat["cluster%d" % n_components][0]
+
+    return json.dumps({
+        "clusters": clusters.tolist()
     })
 
 @app.route("/precipitation/list")

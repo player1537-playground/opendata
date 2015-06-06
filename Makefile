@@ -32,6 +32,11 @@ gen/precip_approx/%.mat: gen/precip/%.mat
 	@mkdir -p $(dir $@)
 	python -m analysis.approximate $^ $@
 
+.PRECIOUS: gen/clusters/%.mat
+gen/clusters/%.mat: gen/precip_approx/%.mat
+	@mkdir -p $(dir $@)
+	python -m analysis.cluster $^ $@
+
 .PHONY: clean
 clean:
 	rm -f -- $(wildcard *~) $(wildcard **/*~) $(wildcard **/**/*~)
