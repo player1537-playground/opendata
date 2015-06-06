@@ -20,17 +20,19 @@ def main():
     precip = matrices["precip"]
 
     results = dict()
-    for n_components in range(1, 10):
+    features = range(1, 10)
+    for n_components in features:
         nmf = sklearn.decomposition.NMF(n_components)
 
         W = nmf.fit_transform(precip)
         H = nmf.components_
 
-        print "%2d: %r" % (n_components, rmse(W.dot(H), precip))
+        print "%3d: rmse = %0.4f" % (n_components, rmse(W.dot(H), precip))
 
         results["W%d" % n_components] = W
         results["H%d" % n_components] = H
 
+    results["features"] = np.array(features)
     results["locations"] = matrices["locations"]
     results["wbans"] = matrices["wbans"]
     results["datetimes"] = matrices["datetimes"]
