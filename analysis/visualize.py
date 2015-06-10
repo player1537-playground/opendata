@@ -7,7 +7,7 @@ import os.path
 app = Flask(__name__)
 app.root_path = os.path.abspath(os.path.dirname(app.root_path))
 
-progs = ["approximate", "precipitation", "feature_view", "clusters"]
+progs = ["approximate", "precipitation", "feature_view", "clusters", "voronoi"]
 
 cache = {}
 
