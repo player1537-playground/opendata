@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<head>
+  <title>Visualization: {{ which }}</title>
+  <link href={{ url_for("static", filename="./bower/bootstrap/dist/css/bootstrap.min.css") }} rel="stylesheet" media="screen">
+  <link href={{ url_for("static", filename="bower/leaflet/dist/leaflet.css") }} rel="stylesheet">
+</head>
+<body>
+  <div id="content"></div>
+
+  <script src={{ url_for("static", filename="bower/jquery/dist/jquery.min.js") }}></script>
+  <script src={{ url_for("static", filename="bower/bootstrap/dist/js/bootstrap.min.js") }}></script>
+  <script src={{ url_for("static", filename="bower/d3/d3.min.js") }}></script>
+  <script src={{ url_for("static", filename="bower/queue-async/queue.min.js") }}></script>
+  <script src={{ url_for("static", filename="bower/leaflet/dist/leaflet.js") }}></script>
+  <script src={{ url_for("static", filename="bower/Leaflet.heat/dist/leaflet-heat.js") }}></script>
+  <script src={{ url_for("static", filename=js) }}></script>
+</body>

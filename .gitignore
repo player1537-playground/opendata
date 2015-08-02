@@ -1,0 +1,7 @@
+*~
+traffic.db
+traffic.db.bak
+static/bower
+LinkSpeedQuery.txt
+saved
+*.pyc
