@@ -8,6 +8,7 @@ import time
 import csv
 import datetime
 import tarfile
+import gzip
 
 schema = """
 CREATE TABLE IF NOT EXISTS traffic (
@@ -42,14 +43,8 @@ def initialize_db(db):
     db.commit()
 
 def get_saved_ingests(filename):
-    with tarfile.open(filename, 'r') as tar:
-        for tarinfo in tar:
-            if not tarinfo.isfile():
-                continue
-            f = tar.extractfile(tarinfo)
-
-            yield (tarinfo.name, f)
-            tar.members = []
+    with gzip.open(filename, "r") as f:
+        yield (filename, f)
 
 def get_web_ingests(*args):
     url = "http://207.251.86.229/nyc-links-cams/LinkSpeedQuery.txt"
