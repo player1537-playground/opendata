@@ -1,6 +1,12 @@
+var color = function(i) { return i === 3 ? 'red' : 'blue' };
+
 queue()
     .defer(d3.json, "/api/link_points")
     .await(function(error, data) {
+        d3.values(data).forEach(function(d) {
+            console.log("" + d.map(function(dd) { return "[" + dd + "]" }));
+        });
+
         var bounds = { south: Infinity, west: Infinity, north: -Infinity, east: -Infinity };
         d3.values(data).forEach(function(speedIdValues) {
             speedIdValues.forEach(function(d) {
@@ -11,7 +17,6 @@ queue()
                 if (lat > bounds.north) bounds.north = lat;
                 if (lng > bounds.east)  bounds.east  = lng;
                 if (lng < bounds.west)  bounds.west  = lng;
-                console.log(bounds, d);
             });
         });
 
@@ -37,5 +42,7 @@ queue()
             accessToken: 'pk.eyJ1IjoicGxheWVyMTUzNyIsImEiOiI1OWM0YzhiOTc4ZjIyNDNkZGU4OTYzN2JhMzVkYTM1NCJ9.13Xa8k0RPCfELN4v908Chg'
         }).addTo(map);
 
-
+        d3.values(data).forEach(function(d, i) {
+            L.polyline(d, { color: color(i) }).addTo(map);
+        });
     });
