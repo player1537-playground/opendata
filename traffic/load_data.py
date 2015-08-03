@@ -21,7 +21,7 @@ ON traffic(speed_id, last_updated, speed);
 
 CREATE TABLE IF NOT EXISTS path (
   speed_id INTEGER PRIMARY KEY,
-  link_points TEXT
+  encoded_polyline TEXT
 );
 """
 
@@ -80,13 +80,13 @@ def get_parsed_records(records):
         d = {
             "DataAsOf": parse_csv_date(record["DataAsOf"]),
             "Speed": float(record["Speed"]),
-            "linkPoints": record["linkPoints"],
+            "EncodedPolyLine": record["EncodedPolyLine"],
             "Id": int(record["Id"]),
         }
 
         yield d
 
-def load_record(db, DataAsOf, Speed, Id, linkPoints, **kwargs):
+def load_record(db, DataAsOf, Speed, Id, EncodedPolyLine, **kwargs):
     cur = db.execute(('SELECT MAX(last_updated)'
                       'FROM traffic '
                       'WHERE speed_id = ? '),
@@ -106,10 +106,10 @@ def load_record(db, DataAsOf, Speed, Id, linkPoints, **kwargs):
 
     db.execute(('INSERT OR IGNORE '
                 'INTO path '
-                '  (speed_id, link_points) '
+                '  (speed_id, encoded_polyline) '
                 'VALUES '
                 '  (?, ?) '),
-               [Id, linkPoints])
+               [Id, EncodedPolyLine])
 
 def main(from_where, filename):
     db = get_db()

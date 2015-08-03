@@ -111,7 +111,7 @@ def api_by_date(datestr):
 
 api_link_points_select_sql = """
 SELECT speed_id
-     , link_points
+     , encoded_polyline
 FROM path
 GROUP BY speed_id
 """
@@ -120,30 +120,9 @@ GROUP BY speed_id
 def api_link_points():
     results = query_db(api_link_points_select_sql)
 
-    def p(x):
-        print x
-        return x
-
-    def link_points_to_list(link_points):
-        lst = []
-        for point_str in link_points.split(' '):
-            try:
-                (lat, lng) = point_str.split(',')
-                if '.' not in lat or '.' not in lng:
-                    continue
-
-                point = map(float, (lat, lng))
-                lst += [point]
-            except:
-                pass
-
-        return lst
-
-
-
     d = {
-        speed_id: link_points_to_list(link_points)
-        for (speed_id, link_points) in results
+        speed_id: encoded_polyline
+        for (speed_id, encoded_polyline) in results
     }
 
     return Response(json.dumps(d, indent=2), mimetype='text/json')

@@ -1,8 +1,13 @@
-var color = function(i) { return i === 3 ? 'red' : 'blue' };
+var color = d3.scale.category20();
 
 queue()
     .defer(d3.json, "/api/link_points")
-    .await(function(error, data) {
+    .await(function(error, encodedData) {
+        var data = {};
+        d3.entries(encodedData).forEach(function(d) {
+            data[d.key] = L.PolylineUtil.decode(d.value);
+        });
+
         d3.values(data).forEach(function(d) {
             console.log("" + d.map(function(dd) { return "[" + dd + "]" }));
         });
