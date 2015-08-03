@@ -1,0 +1,5 @@
+data
+gen
+static/bower
+*.pyc
+*~
