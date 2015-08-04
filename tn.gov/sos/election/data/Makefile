@@ -27,11 +27,6 @@ GEN_COUNTY := $(GEN_COUNTY_REGISTRATION) $(GEN_COUNTY_TURNOUT)
 
 GEN_FILES := $(GEN_CSV_FILES) $(GEN_LARGE_CSV) $(GEN_COUNTY)
 
-JS_D3 := js/d3.v3.min.js
-JS_QUEUE := js/queue.v1.min.js
-JS_COLORBREWER := js/colorbrewer.v1.min.js
-JS := $(JS_D3) $(JS_QUEUE) $(JS_COLORBREWER)
-
 ZIP_CODE_CSV := raw/zipcode.csv
 
 all: $(GEN_FILES)
@@ -72,21 +67,9 @@ gen/county/registration-%.csv: gen/voter-registration.csv
 	@mkdir -p $(dir $@)
 	csvgrep -c COUNTY -m $* $< > $@
 
-$(JS_D3):
-	@mkdir -p $(dir $@)
-	wget http://d3js.org/d3.v3.min.js -O $@
-
-$(JS_QUEUE):
-	@mkdir -p $(dir $@)
-	wget http://d3js.org/queue.v1.min.js -O $@
-
-$(JS_COLORBREWER):
-	@mkdir -p $(dir $@)
-	wget http://d3js.org/colorbrewer.v1.min.js -O $@
-
 voter-turnout.txt: $(GEN_LARGE_CSV)
 	cp $< $@
 
 .PHONY: run-server
-run-server: $(JS) voter-turnout.txt
+run-server: voter-turnout.txt
 	python -m SimpleHTTPServer 8888
